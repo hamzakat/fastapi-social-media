@@ -9,9 +9,11 @@ Implemeted in two versions in terms of database integration:
 * FastAPI
 * OpenAPI docuementation with SwaggerUI
 * Pytest for integration tests
+* Authentication using JWT
 * PostgreSQL:
   * Psycopg2 (used in both SQL queries and ORM versions)
   * SQLAlchemy (used in ORM version)
+* Alembic for managing database migrations
 * Docker
 * GitHub Actions for CI/CD pipeline
 
