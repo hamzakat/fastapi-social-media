@@ -5,17 +5,18 @@ Implemeted in two versions in terms of database integration:
 2. ORM
 
 ## Technologies
-* Python
-* FastAPI
-* OpenAPI docuementation with SwaggerUI
-* Pytest for integration tests
-* Authentication using JWT
-* PostgreSQL:
-  * Psycopg2 (used in both SQL queries and ORM versions)
-  * SQLAlchemy (used in ORM version)
-* Alembic for managing database migrations
-* Docker
-* GitHub Actions for CI/CD pipeline
+* **Python**
+* **FastAPI**
+* **OpenAPI** docuementation with **SwaggerUI**
+* **Pytest** for integration tests
+* Authentication using **JWT**
+* **PostgreSQL**:
+  * **Psycopg2** (used in both SQL queries and ORM versions)
+  * **SQLAlchemy** (used in ORM version)
+* **Alembic** for managing database migrations
+* **Pydantic** for schema vaildation
+* **Docker**
+* **GitHub Actions** for CI/CD pipeline
 
 ## Todo
 * [x] CRUD operations
