@@ -5,7 +5,8 @@ from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/posts" # we can add multiple prefixes
+    prefix="/posts",
+    tags=['Posts']  # tags will improve the categorization in the API docs page
 )
 # to nest other routers: router.include_router(other.router)
 

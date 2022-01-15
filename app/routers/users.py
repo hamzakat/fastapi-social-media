@@ -4,8 +4,10 @@ from .. import models, schemas, utils
 from ..database import get_db
 
 router = APIRouter(
-    prefix="/users"
+    tags=['Users']
 )
+
+
 
 ''' Users routes '''
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
