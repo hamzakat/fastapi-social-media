@@ -1,8 +1,11 @@
+from statistics import mode
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from . import schemas
+from sqlalchemy.orm import Session
+
+from . import schemas, models, database
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
@@ -35,11 +38,15 @@ def verify_access_token(token: str, credential_exception):
     return token_data
     
 # this function will be used as a dependency for all operations that require signed in user
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
     credential_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=f"Could not vaildate credentials",
         headers={"WWW-Authenticate": "Bearer"}
     )
 
-    return verify_access_token(token, credential_exception)
+    token = verify_access_token(token, credential_exception)
+
+    user = db.query(models.User).filter(models.User.id == token.id).first()
+
+    return user
