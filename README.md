@@ -22,7 +22,7 @@ Implemeted in two versions in terms of database integration:
 * [x] CRUD operations
 * [x] OpenAPI documentation
 * [x] Integration with the database using Psycopg2
-* [ ] Integration with the database using SQLAlchemy
+* [x] Integration with the database using SQLAlchemy
 * [ ] Setup integration tests
 * [ ] App dockerization
 * [ ] Setup the CI/CD pipeline
