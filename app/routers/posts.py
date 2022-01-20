@@ -1,9 +1,11 @@
 
+from pyexpat import model
 from statistics import mode
 from typing import List, Optional
 from unittest import skip
 from fastapi import APIRouter, Response, status, HTTPException, Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from .. import models, schemas, oauth2
 from ..database import get_db
 
@@ -15,7 +17,7 @@ router = APIRouter(
 
 ''' Posts routes '''
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostVotes])
 async def get_posts(db: Session = Depends(get_db),
                 current_user: models.User = Depends(oauth2.get_current_user),
                 limit: int = 10,
@@ -24,23 +26,80 @@ async def get_posts(db: Session = Depends(get_db),
 
     # use this to only read the current user's posts
     # posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
-    
-    # here, we search for posts with titles that contains the string in "search" query parameter 
-    posts = db.query(models.Post) \
+    '''
+    # Get only posts (w/o votes info):
+
+    query = db.query(models.Post) \
             .filter(models.Post.title.contains(search)) \
             .limit(limit) \
             .offset(skip) \
             .all()
+    '''
 
-    return posts
+    '''
+    # Get posts w/ votes info
+
+    Corresponding SQL query:
+        SELECT posts.*, count(votes.post_id) AS votes 
+        FROM posts LEFT OUTER JOIN votes 
+        ON posts.id = votes.post_id 
+        WHERE (posts.title LIKE '%%' || %(search)s || '%%') GROUP BY posts.id
+        LIMIT %(limit)s 
+        OFFSET %(skip)s
+
+    '''
+    query = db.query(
+                models.Post,
+                func.count(
+                    models.Votes.post_id
+                ).label("votes")
+            ) \
+            .join(
+                models.Votes,
+                models.Votes.post_id == models.Post.id,
+                isouter=True
+            ) \
+            .group_by(models.Post.id) \
+            .filter(models.Post.title.contains(search)) \
+            .limit(limit) \
+            .offset(skip) \
+    
+    # print(q)
+            
+    posts = query.all()
+
+    return posts 
 
 
 
-@router.get("/{id}", response_model=schemas.Post)
+@router.get("/{id}", response_model=schemas.PostVotes)
 async def get_post(id: int,
                 db: Session = Depends(get_db),
                 current_user: models.User = Depends(oauth2.get_current_user)):
-    post = db.query(models.Post).filter(models.Post.id  == id).first()
+    
+    '''
+    # Get post w/o votes info
+    query = db.query(models.Post) \
+            .filter(models.Post.id  == id) \
+            .first()
+    '''
+
+    # Get post w/ votes info
+    query = db.query(
+                models.Post,
+                func.count(
+                    models.Votes.post_id
+                ).label("votes")
+            ) \
+            .join(
+                models.Votes,
+                models.Votes.post_id == models.Post.id,
+                isouter=True
+            ) \
+            .group_by(models.Post.id) \
+            .filter(models.Post.id  == id)
+
+    post = query.first()
 
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id: {id} was not found")

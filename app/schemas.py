@@ -48,6 +48,14 @@ class Post(PostBase):
         # apply the schema on non-dictionary data (SQLAlchemy query data)
         orm_mode = True
 
+# post combined with votes info
+class PostVotes(BaseModel):
+    Post: Post
+    votes: int
+
+    class Config:
+        orm_mode = True
+
 class Token(BaseModel):
     access_token: str
     token_type: str
