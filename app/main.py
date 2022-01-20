@@ -14,4 +14,4 @@ app.include_router(auth.router)
 
 @app.get("/")
 async def root():
-    return {"data": "API root"}
+    return {"message": "API root"}
