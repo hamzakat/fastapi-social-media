@@ -6,7 +6,7 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -54,3 +54,10 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: Optional[str] = None
+
+class Vote(BaseModel):
+    post_id: int
+    
+    # conint(): restricts the allowed values
+    # "le" param refers to less or equal 
+    dir: conint(le=1)   # 0: Downvote / 1: Upvote 
