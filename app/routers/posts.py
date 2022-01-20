@@ -1,5 +1,6 @@
 from os import stat
 from typing import List
+from unittest import skip
 from fastapi import APIRouter, Response, status, HTTPException, Depends
 from sqlalchemy.orm import Session
 from .. import models, schemas, oauth2
@@ -15,12 +16,14 @@ router = APIRouter(
 
 @router.get("/", response_model=List[schemas.Post])
 async def get_posts(db: Session = Depends(get_db),
-                current_user: models.User = Depends(oauth2.get_current_user)):
+                current_user: models.User = Depends(oauth2.get_current_user),
+                limit: int = 10,
+                skip: int = 0):
 
     # use this to only read the current user's posts
     # posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
-
-    posts = db.query(models.Post).all()
+    
+    posts = db.query(models.Post).limit(limit).offset(skip).all()
 
     return posts
 
