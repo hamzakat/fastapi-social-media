@@ -1,4 +1,3 @@
-from sys import prefix
 from fastapi import FastAPI
 from . import models 
 from .database import engine

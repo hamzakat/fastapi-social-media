@@ -1,5 +1,6 @@
-from os import stat
-from typing import List
+
+from statistics import mode
+from typing import List, Optional
 from unittest import skip
 from fastapi import APIRouter, Response, status, HTTPException, Depends
 from sqlalchemy.orm import Session
@@ -18,12 +19,18 @@ router = APIRouter(
 async def get_posts(db: Session = Depends(get_db),
                 current_user: models.User = Depends(oauth2.get_current_user),
                 limit: int = 10,
-                skip: int = 0):
+                skip: int = 0,
+                search: Optional[str] = "") :
 
     # use this to only read the current user's posts
     # posts = db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
     
-    posts = db.query(models.Post).limit(limit).offset(skip).all()
+    # here, we search for posts with titles that contains the string in "search" query parameter 
+    posts = db.query(models.Post) \
+            .filter(models.Post.title.contains(search)) \
+            .limit(limit) \
+            .offset(skip) \
+            .all()
 
     return posts
 
